@@ -28,23 +28,31 @@ class MainPage(webapp2.RequestHandler):
 
 		q = SongPlayedData.query(ancestor=ndb.Key('SongsPlayed', 'default')).order(-SongPlayedData.date)
 		songdata = q.fetch(10)
-
+		self.response.write("=== LAST PLAYED SONGS\n");
 		for s in songdata:
 			self.response.write(s.path + "\n")
 
 		q = User.query(ancestor=ndb.Key('Users', 'default'))
 		users = q.fetch(100)
+		self.response.write("=== REGISTERED USERS\n");
 		for u in users:
-			self.response.write(u.name + " " + str(u.key) + "\n") 
+			if u.plan :
+				self.response.write(u.name + " (" + u.plan +")\n") 
+			else :
+				self.response.write(u.name +"\n") 
 
 		q = PlayList.query(ancestor=ndb.Key('PlayLists', 'default'))
 		plists = q.fetch(100)
+		self.response.write("=== UPLOADED PLAYLISTS\n");
 		for u in plists:
-			self.response.write(u.name + " " + str(u.key) + "\n") 
+			self.response.write(u.name + ":" + u.username + "\n"); 
 
 
 class GetPlayed(webapp2.RequestHandler):
 	def get(self):
+		self.get_played(self.request.get('count'))
+
+	def get_played(self, count) :
 		#p = self.request.body
 		#data = json.decode(p)
 		q = SongPlayedData.query(ancestor=ndb.Key('SongsPlayed', 'default')).order(-SongPlayedData.date)
@@ -53,8 +61,8 @@ class GetPlayed(webapp2.RequestHandler):
 		self.response.headers['Content-Type'] = 'application/json'
 		plist = []
 		for s in songdata:
-			plist.append({ 'path' : s.path, 'collection' : s.collection })
-		self.response.write(json.encode(plist))
+			plist.append({ 'path' : s.path, 'collection' : s.collection, 'uid' : s.uid[:6] })
+		self.response.write(json.encode({ 'songs' : plist, 'rc' : 0}))
 
 class GetList(webapp2.RequestHandler):
 	def get(self):
@@ -91,7 +99,7 @@ class GetLists(webapp2.RequestHandler):
 		plist = []
 		for p in pquery :
 			plist.append({ 'name' : p.name, 'user' : p.username })
-		self.response.write(json.encode(plist))
+		self.response.write(json.encode({ 'lists' : plist, 'rc' : 0}))
 
 class SetList(webapp2.RequestHandler):
 
