@@ -1,9 +1,20 @@
 chipstat
 ========
 
-App engine server for music playing statistics
+*chipstat* is an App Engine server that allows music players to share play lists and play statistics.
+It is mainly meant to be used by *Retro music players* (C64, Amiga etc) to help users find new music by
+looking at others users play lists and what people are playing right now.
+
+Currently only a few API calls are used, but the application is live at;
+
+http://wired-height-596.appspot.com
+
+(But until I get others to beta test my music player *Chipmachine* it will only show you what I am listening to :)
+
 
 ## API
+
+All calls expects post data in json in and out
 
 ### `song_played`
 
